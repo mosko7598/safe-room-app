@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>SAFE-ROOM | רישום והתחברות</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f5f7fa;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    .card {
+      background: white;
+      padding: 30px 40px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border-radius: 12px;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px 12px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #007bff;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h2>ברוך הבא למערכת SAFE-ROOM</h2>
+
+    <div id="register-section">
+      <input type="text" id="name" placeholder="שם מלא">
+      <input type="tel" id="phone" placeholder="מספר טלפון">
+      <button onclick="registerUser()">המשך</button>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = "http://192.168.1.98:8000";
+
+async function registerUser() {
+  const name = document.getElementById("name").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+
+  if (!name || !phone) return alert("יש למלא את כל השדות");
+
+  const userData = { name, phone };
+
+  try {
+    const response = await fetch(`${API_BASE}/users/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(userData)
+    });
+
+    if (!response.ok) {
+      const err = await response.json();
+      alert("שגיאה: " + err.detail);
+      return;
+    }
+
+    const user = await response.json();
+    localStorage.setItem("currentUser", JSON.stringify(user));
+
+    if (user.is_admin) {
+      window.location.href = "/app/admin.html";
+    } else {
+      window.location.href = "/app/map.html";
+    }
+
+  } catch (err) {
+    alert("שגיאה בחיבור לשרת");
+    console.error(err);
+  }
+}
+
+  </script>
+
+</body>
+</html>
