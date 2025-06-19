@@ -68,45 +68,45 @@
   </div>
 
   <script>
-    fetch("https://www.safe-room-app.com/users/", ...)
+  const API_BASE = "https://www.safe-room-app.com";
 
-async function registerUser() {
-  const name = document.getElementById("name").value.trim();
-  const phone = document.getElementById("phone").value.trim();
+  async function registerUser() {
+    const name = document.getElementById("name").value.trim();
+    const phone = document.getElementById("phone").value.trim();
 
-  if (!name || !phone) return alert("יש למלא את כל השדות");
+    if (!name || !phone) return alert("יש למלא את כל השדות");
 
-  const userData = { name, phone };
+    const userData = { name, phone };
 
-  try {
-    const response = await fetch(`${API_BASE}/users/`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(userData)
-    });
+    try {
+      const response = await fetch(`${API_BASE}/users/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userData)
+      });
 
-    if (!response.ok) {
-      const err = await response.json();
-      alert("שגיאה: " + err.detail);
-      return;
+      if (!response.ok) {
+        const err = await response.json();
+        alert("שגיאה: " + err.detail);
+        return;
+      }
+
+      const user = await response.json();
+      localStorage.setItem("currentUser", JSON.stringify(user));
+
+      if (user.is_admin) {
+        window.location.href = "/app/admin.html";
+      } else {
+        window.location.href = "/app/map.html";
+      }
+
+    } catch (err) {
+      alert("שגיאה בחיבור לשרת");
+      console.error(err);
     }
-
-    const user = await response.json();
-    localStorage.setItem("currentUser", JSON.stringify(user));
-
-    if (user.is_admin) {
-      window.location.href = "/app/admin.html";
-    } else {
-      window.location.href = "/app/map.html";
-    }
-
-  } catch (err) {
-    alert("שגיאה בחיבור לשרת");
-    console.error(err);
   }
-}
+</script>
 
-  </script>
 
 </body>
 </html>
